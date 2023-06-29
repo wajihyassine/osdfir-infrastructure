@@ -1,0 +1,1 @@
+/usr/local/google/home/wyassine/Documents/osdfir-infrastructure/charts/turbinia/tools/create-gcp-sa.sh

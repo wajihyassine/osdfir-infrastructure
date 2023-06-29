@@ -1,0 +1,1 @@
+/usr/local/google/home/wyassine/Documents/osdfir-infrastructure/charts/timesketch/tools/download-timesketch-configs.sh
