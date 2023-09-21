@@ -26,6 +26,13 @@ jobs:
           python-version: '3.9'
           check-latest: true
 
+      - name: Debug Current Branch
+        run: |
+          echo "Current branch: $GITHUB_REF"
+          echo "Github repo: $GITHUB_REPOSITORY"
+          echo "Github server: $GITHUB_SERVER_URL"
+
+
       - name: Set up chart-testing
         uses: helm/chart-testing-action@main
 
