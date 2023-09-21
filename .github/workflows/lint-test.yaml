@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       
       - name: Fetch history
         run: git fetch --prune --unshallow
@@ -39,7 +39,6 @@ jobs:
       - name: Run chart-testing (list-changed)
         id: list-changed
         run: |
-          git fetch --all
           changed=$(ct list-changed --config .github/ct.yaml)
           if [[ -n "$changed" ]]; then
             echo "changed=true" >> "$GITHUB_OUTPUT"
