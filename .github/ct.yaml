@@ -1,5 +1,3 @@
-remote: upstream
-target-branch: main
 chart-dirs:
   - charts
 helm-extra-args: --timeout 800s
