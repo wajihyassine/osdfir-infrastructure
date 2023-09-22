@@ -3,5 +3,7 @@ target-branch: main
 chart-repos:
   - https://charts.bitnami.com/bitnami
   - https://opensearch-project.github.io/helm-charts
+chart-dirs:
+  - charts
 check-version-increment: false
 helm-extra-args: --timeout 600s
