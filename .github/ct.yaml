@@ -1,7 +1,7 @@
 remote: origin
 target-branch: main
 chart-dirs:
-  - charts
+  - charts/turbinia
 chart-repos:
   - https://charts.bitnami.com/bitnami
   - https://opensearch-project.github.io/helm-charts
