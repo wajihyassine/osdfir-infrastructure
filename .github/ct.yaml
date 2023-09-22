@@ -1,7 +1,9 @@
 remote: origin
 target-branch: main
 chart-dirs:
-  - charts
+  - charts/turbinia
+  - charts/timesketch
+  - charts/osdfir-infrastructure
 chart-repos:
   - https://charts.bitnami.com/bitnami
   - https://opensearch-project.github.io/helm-charts
