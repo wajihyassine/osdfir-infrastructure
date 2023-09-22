@@ -110,7 +110,7 @@ timesketch:
     persistence:
       ## @param timesketch.opensearch.persistence.size Opensearch Persistent Volume size. A persistent volume would be created for each Opensearch replica running
       ##
-      size: 2Gi
+      size: 3Gi
     ## @param timesketch.opensearch.resources.requests Requested resources for the Opensearch containers
     ##
     resources:

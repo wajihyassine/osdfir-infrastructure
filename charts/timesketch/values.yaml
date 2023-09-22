@@ -195,7 +195,7 @@ persistence:
   name: timesketchvolume
   ## @param persistence.size Timesketch persistent volume size
   ##
-  size: 2Gi
+  size: 4Gi
   ## @param persistence.storageClass PVC Storage Class for Timesketch volume
   ## If set to "-", storageClassName: "", which disables dynamic provisioning
   ## If undefined or set to null, no storageClassName spec is
