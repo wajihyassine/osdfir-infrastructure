@@ -623,3 +623,4 @@ oauth2proxy:
     ## @param oauth2proxy.redis.enabled Enable Redis for OAuth Session Storage
     ##
     enabled: false
+  
