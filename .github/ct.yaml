@@ -1,4 +1,4 @@
-target-branch: main
+target-branch: master
 chart-repos:
   - https://charts.bitnami.com/bitnami
   - https://opensearch-project.github.io/helm-charts
