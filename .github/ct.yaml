@@ -1,6 +1,5 @@
-target-branch: master
+target-branch: main
 chart-repos:
   - https://charts.bitnami.com/bitnami
   - https://opensearch-project.github.io/helm-charts
-helm-extra-args: --timeout 800s
 check-version-increment: false
