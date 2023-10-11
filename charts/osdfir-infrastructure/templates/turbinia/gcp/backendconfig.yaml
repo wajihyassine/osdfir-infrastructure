@@ -1,0 +1,24 @@
+{{- if and (.Values.turbinia.ingress.enabled) (eq .Values.turbinia.ingress.className "gce") }}
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: {{ .Release.Name }}-turbinia-backendconfig
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "turbinia.labels" . | nindent 4 }}
+spec:
+  timeoutSec: 300
+  healthCheck:
+    checkIntervalSec: 5
+    timeoutSec: 5
+    healthyThreshold: 2
+    unhealthyThreshold: 2
+    type: HTTP
+    {{- if .Values.oauth2proxy.enabled }}
+    requestPath: /ping
+    port: 4180
+    {{- else }}
+    requestPath: /web
+    port: {{ .Values.turbinia.service.port }}
+    {{- end }}
+{{- end }}

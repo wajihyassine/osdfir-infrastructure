@@ -1,0 +1,93 @@
+{{- $userconfigs := .Files.Glob .Values.timesketch.config.override }}
+{{- if .Values.timesketch.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-timesketch-worker
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app.kubernetes.io/component: worker
+    {{- include "timesketch.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: worker
+      {{- include "timesketch.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        # Have Deployment restart after each upgrade
+        roll: {{ randAlphaNum 5 | quote }}
+        {{- if .Values.metrics.enabled }} 
+        prometheus.io/port: {{ .Values.metrics.port | quote }}
+        prometheus.io/scrape: "true"
+        {{- end }}
+      labels:
+        app.kubernetes.io/component: worker
+        {{- include "timesketch.selectorLabels" . | nindent 8 }}
+    spec:
+      securityContext:
+        {{- toYaml .Values.timesketch.worker.podSecurityContext | nindent 8 }}
+      initContainers:
+      {{- include "timesketch.initContainer" . | nindent 8 }}
+      containers:
+        - name: worker
+          securityContext:
+              {{- toYaml .Values.timesketch.worker.securityContext | nindent 12 }}
+          image: "{{ .Values.timesketch.image.repository }}:{{ .Values.timesketch.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.timesketch.image.pullPolicy }}
+          command: ["sh", "-c", "./docker-entrypoint.sh timesketch-worker"]
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+                  apiVersion: v1
+            - name: WORKER_LOG_LEVEL
+              value: "DEBUG"
+          volumeMounts:
+            - mountPath: {{ (include "timesketch.uploadPath" .) | quote }}
+              name: timesketchvolume
+              subPath: uploads
+            - mountPath: /var/log/timesketch
+              name: timesketchvolume
+              subPathExpr: logs/$(POD_NAME)
+            - mountPath: /etc/timesketch
+              name: timesketch-configs
+          ports:
+            {{- if .Values.metrics.enabled }}
+            - containerPort: {{ .Values.metrics.port }}
+            {{- end }}
+            - containerPort: {{ .Values.timesketch.service.port }}
+          resources:
+            {{- toYaml .Values.timesketch.worker.resources | nindent 12 }}
+      volumes:
+        - name: timesketchvolume
+          persistentVolumeClaim:
+            claimName: {{ include "osdfir.pvc.name"  . }}
+            readOnly: false
+        - name: init-timesketch
+          configMap:
+            name: {{ .Release.Name }}-timesketch-initconfig
+            defaultMode: 0744
+        - name: timesketch-configs
+          emptyDir: {}
+        {{- if $userconfigs }}
+        - name: uploaded-configs
+          configMap:
+            name: {{ .Release.Name }}-timesketch-config
+        {{- end }}
+      {{- with .Values.timesketch.worker.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.timesketch.worker.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.timesketch.worker.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

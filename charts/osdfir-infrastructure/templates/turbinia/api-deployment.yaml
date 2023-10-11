@@ -1,0 +1,99 @@
+{{- $userconfigs := .Files.Get .Values.turbinia.config.override }}
+{{- if .Values.turbinia.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-turbinia-api
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app.kubernetes.io/component: api
+    {{- include "turbinia.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: api
+      {{- include "turbinia.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        # Have Deployment restart after each upgrade
+        roll: {{ randAlphaNum 5 | quote }}
+        {{- if .Values.metrics.enabled }}
+        prometheus.io/port: {{ .Values.metrics.port | quote }}
+        prometheus.io/scrape: "true"
+        {{- end }}
+      labels:
+        app.kubernetes.io/component: api
+        {{- include "turbinia.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- if .Values.turbinia.gcp.enabled }} 
+      serviceAccountName: {{ .Values.turbinia.gcp.serviceAccountName }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.turbinia.api.podSecurityContext | nindent 8 }}
+      initContainers:
+      {{- include "turbinia.initContainer" . | nindent 8 }} 
+      containers:
+        - name: api
+          securityContext:
+              {{- toYaml .Values.turbinia.api.securityContext | nindent 12 }}
+          image: "{{ .Values.turbinia.api.image.repository }}:{{ .Values.turbinia.api.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.turbinia.api.image.pullPolicy }}
+          livenessProbe:
+            exec:
+              command: ['sh', '-c', "ps aux | grep api_server | grep -v grep"]
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          env:
+            - name: TURBINIA_EXTRA_ARGS
+              value: "-d"
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          volumeMounts:
+            - mountPath: /var/log
+              name: logs
+            - mountPath: /mnt/turbiniavolume
+              name: turbiniavolume
+            - mountPath: /etc/turbinia
+              name: turbinia-configs
+          ports:
+            {{- if .Values.metrics.enabled }}
+            - containerPort: {{ .Values.metrics.port }}
+            {{- end }}
+            - containerPort: {{ .Values.turbinia.service.port }}
+          resources:
+            {{- toYaml .Values.turbinia.api.resources | nindent 12 }}
+      volumes:
+        - name: turbiniavolume
+          persistentVolumeClaim:
+            claimName: {{ include "osdfir.pvc.name"  . }}
+            readOnly: false
+        - name: logs
+          emptyDir: {}
+        - name: init-turbinia
+          configMap:
+            name: {{ .Release.Name }}-turbinia-initconfig
+            defaultMode: 0777
+        - name: turbinia-configs
+          emptyDir: {}
+        {{- if $userconfigs }}
+        - name: user-configs
+          configMap:
+            name: {{ .Release.Name }}-turbinia-config
+        {{- end }}
+      {{- with .Values.turbinia.api.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.turbinia.api.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.turbinia.api.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

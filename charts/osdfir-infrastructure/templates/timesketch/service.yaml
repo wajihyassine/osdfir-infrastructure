@@ -1,0 +1,22 @@
+{{- if .Values.timesketch.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-timesketch
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "timesketch.labels" . | nindent 4 }}
+  {{- if and (.Values.timesketch.ingress.enabled) ( eq .Values.timesketch.ingress.className "gce") }}
+  annotations:
+    cloud.google.com/neg: '{"ingress": true}'
+    cloud.google.com/backend-config: '{"ports": {"{{ .Values.timesketch.service.port }}":"{{ .Release.Name }}-timesketch-backendconfig"}}'
+  {{- end }}
+spec:
+  type: {{ .Values.timesketch.service.type }}
+  ports:
+    - port: {{ .Values.timesketch.service.port }}
+      protocol: TCP
+  selector:
+    app.kubernetes.io/component: frontend
+    {{- include "timesketch.selectorLabels" . | nindent 4 }}
+{{- end }}

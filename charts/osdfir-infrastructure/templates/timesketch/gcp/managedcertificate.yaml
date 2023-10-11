@@ -1,0 +1,10 @@
+{{- if and (.Values.timesketch.ingress.enabled) (eq .Values.timesketch.ingress.className "gce") }}
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: {{ .Release.Name }}-timesketch-managedssl
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  domains: 
+    - {{ required "A valid .Values.ingress.host entry is required!" .Values.timesketch.ingress.host }}
+{{- end }}

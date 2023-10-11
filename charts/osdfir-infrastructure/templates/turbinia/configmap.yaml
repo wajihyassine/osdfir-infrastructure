@@ -1,0 +1,12 @@
+{{- $userconfigs := .Files.Glob .Values.turbinia.config.override }}
+{{- if and $userconfigs .Values.turbinia.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-turbinia-config
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "turbinia.labels" . | nindent 4 }}
+data:
+{{ ($userconfigs).AsConfig | indent 2 }}
+{{- end }}

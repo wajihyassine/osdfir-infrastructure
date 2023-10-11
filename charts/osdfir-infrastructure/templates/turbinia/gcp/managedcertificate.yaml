@@ -1,0 +1,12 @@
+{{- if and (.Values.turbinia.ingress.enabled) (eq .Values.turbinia.ingress.className "gce") }}
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: {{ .Release.Name }}-turbinia-managedssl
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "turbinia.labels" . | nindent 4 }}
+spec:
+  domains: 
+    - {{ required "A valid .Values.ingress.host entry is required!" .Values.turbinia.ingress.host }}
+{{- end }}
