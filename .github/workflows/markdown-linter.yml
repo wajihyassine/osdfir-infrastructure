@@ -50,6 +50,8 @@ jobs:
             elif [[ "${#strarr[@]}" -eq 2 ]]; then
               echo "elif 2"
               echo "::warning file=${strarr[0]},line=${strarr[1]}::${message}"
+              echo ${strarr[0]}
+              echo ${strarr[1]} 
               echo ${message}
             else
               echo "::warning:: Error processing: ${line}"
