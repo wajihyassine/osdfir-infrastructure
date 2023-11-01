@@ -22,41 +22,12 @@ jobs:
           DIFF_URL: "${{github.event.pull_request.diff_url}}"
           TEMP_FILE: "${{runner.temp}}/pr-${{github.event.number}}.diff"
         run: |
-          # This request doesn't consume API calls.
           curl -Lkso $TEMP_FILE $DIFF_URL
           files_changed="$(sed -nr 's/[\-\+]{3} [ab]\/(.*)/\1/p' $TEMP_FILE | sort | uniq)"
           md_files="$(echo "$files_changed" | grep -o ".*\.md$" | sort | uniq || true)"
           # Create an empty file, useful when the PR changes ignored files
-          touch ${{runner.temp}}/output
           exit_code=0
-          markdownlint -o ${{runner.temp}}/output ${md_files[@]} || exit_code=$?
-          while read -r line; do
-            echo $line
-            # line format:
-            #   file:row[:column] message
-            # white space inside brackets is intentional to detect the message for the notice.
-            message="${line#*[ ]}"
-            echo $message
-            file_row_column="${line%%[ ]*}"
-            echo $file_row_column
-            # Split by ':'
-            readarray -d : -t strarr < <(printf '%s' "$file_row_column")
-            echo "${#strarr[@]}"
-            if [[ "${#strarr[@]}" -eq 3 ]]; then
-              echo "elif 3"
-              echo ${strarr[0]}
-              echo ${message}
-              echo "::warning file=${strarr[0]},line=${strarr[1]},col=${strarr[2]}::${message}"
-            elif [[ "${#strarr[@]}" -eq 2 ]]; then
-              echo "elif 2"
-              echo "::warning file=${strarr[0]},line=${strarr[1]}::${message}"
-              echo ${strarr[0]}
-              echo ${strarr[1]} 
-              echo ${message}
-            else
-              echo "::warning:: Error processing: ${line}"
-            fi
-          done < ${{runner.temp}}/output
+          markdownlint ${md_files[@]} || exit_code=$?
           if [[ $exit_code -ne 0 ]]; then
             echo "::error:: Please review linter messages"
             exit "$exit_code"
