@@ -1,4 +1,4 @@
-name: 'Markdown linter'
+name: 'Markdown Linter'
 on:
   pull_request:
     branches:
@@ -6,6 +6,7 @@ on:
     paths:
       - '**.md'
 permissions: {}
+
 jobs:
   markdown-linter:
     runs-on: ubuntu-latest
@@ -14,8 +15,10 @@ jobs:
     steps:
       - name: Install mardownlint
         run: npm install -g markdownlint-cli@0.33.0
+
       - name: Checkout project
         uses: actions/checkout@v3
+        
       - name: Execute markdownlint
         env:
           DIFF_URL: "${{github.event.pull_request.diff_url}}"
