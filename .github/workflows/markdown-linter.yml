@@ -43,9 +43,14 @@ jobs:
             readarray -d : -t strarr < <(printf '%s' "$file_row_column")
             echo "${#strarr[@]}"
             if [[ "${#strarr[@]}" -eq 3 ]]; then
+              echo "elif 3"
+              echo ${strarr[0]}
+              echo ${message}
               echo "::warning file=${strarr[0]},line=${strarr[1]},col=${strarr[2]}::${message}"
             elif [[ "${#strarr[@]}" -eq 2 ]]; then
+              echo "elif 2"
               echo "::warning file=${strarr[0]},line=${strarr[1]}::${message}"
+              echo ${message}
             else
               echo "::warning:: Error processing: ${line}"
             fi
