@@ -13,6 +13,11 @@ Timesketch is an open-source tool for collaborative forensic timeline analysis.
 helm install my-release oci://us-docker.pkg.dev/osdfir-registry/osdfir-charts/timesketch
 ```
 
+
+```console
+helm install my-release oci://us-docker.pkg.dev/osdfir-registry/osdfir-charts/timesketch
+```
+
 > **Tip**: To quickly get started with a local cluster, see [minikube install docs](https://minikube.sigs.k8s.io/docs/start/).
 
 ## Introduction
