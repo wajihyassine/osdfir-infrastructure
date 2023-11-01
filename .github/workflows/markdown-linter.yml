@@ -36,7 +36,9 @@ jobs:
             #   file:row[:column] message
             # white space inside brackets is intentional to detect the message for the notice.
             message="${line#*[ ]}"
+            echo $message
             file_row_column="${line%%[ ]*}"
+            echo $file_row_column
             # Split by ':'
             readarray -d : -t strarr < <(printf '%s' "$file_row_column")
             echo "${#strarr[@]}"
