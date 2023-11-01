@@ -31,6 +31,7 @@ jobs:
           exit_code=0
           markdownlint -o ${{runner.temp}}/output ${md_files[@]} || exit_code=$?
           while read -r line; do
+            echo line
             # line format:
             #   file:row[:column] message
             # white space inside brackets is intentional to detect the message for the notice.
