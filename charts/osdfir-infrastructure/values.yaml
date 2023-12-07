@@ -585,11 +585,12 @@ turbinia:
 ## @section Yeti configuration
 ## The following section covers configuration parameters for Yeti
 ##
-## @section Yeti frontend configuration
+## @section Yeti configuration
 ##
 yeti:
   enabled: true
   frontend:
+    # nameOverride: yeti-frontend
     image:
       ## @param frontend.image.repository Yeti frontend image repository
       ##
@@ -630,6 +631,7 @@ yeti:
   ## @section Yeti api configuration
   ##
   api:
+    # nameOverride: yeti-api
     image:
       ## @param api.image.repository Yeti API image repository
       ##
@@ -641,13 +643,6 @@ yeti:
       ## @param api.image.tag Overrides the image tag whose default is the chart appVersion
       ##
       tag: latest
-      ## @param api.image.imagePullSecrets Specify secrets if pulling from a private repository
-      ## ref https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
-      ## e.g.
-      ## imagePullSecrets:
-      ##   - myRegistryKeySecretName
-      ##
-      imagePullSecrets: []
     ## Service Parameters
     ##
     service:
@@ -681,6 +676,7 @@ yeti:
   ## @section Yeti Tasks configuration
   ##
   tasks:
+    # nameOverride: yeti-tasks
     image:
       ## @param tasks.image.repository Yeti tasks image repository
       ##
@@ -692,13 +688,6 @@ yeti:
       ## @param tasks.image.tag Overrides the image tag whose default is the chart appVersion
       ##
       tag: latest
-      ## @param tasks.image.imagePullSecrets Specify secrets if pulling from a private repository
-      ## ref https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
-      ## e.g.
-      ## imagePullSecrets:
-      ##   - myRegistryKeySecretName
-      ##
-      imagePullSecrets: []
     ## Yeti tasks resource requests and limits
     ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
     ## We leave the default resources as a choice for the user in order to increase
@@ -720,26 +709,6 @@ yeti:
       requests:
         cpu: 250m
         memory: 256Mi
-  ## @section Common Parameters
-  ## @param nameOverride String to partially override names.fullname
-  ##
-  nameOverride: ""
-  ## @param fullnameOverride String to fully override names.fullname
-  ##
-  fullnameOverride: ""
-  ## Service Account Parameters
-  ##
-  serviceAccount:
-    ## @param serviceAccount.create Specifies whether a service account should be created
-    ##
-    create: true
-    ## @param serviceAccount.annotations Annotations to add to the service account
-    ##
-    annotations: {}
-    ## @param serviceAccount.name The name of the service account to use
-    ## If not set and create is true, a name is generated using the fullname template
-    ##
-    name: "yeti"
   ## Persistence Storage Parameters
   ##
   persistence:
@@ -778,7 +747,7 @@ yeti:
     ## @param timesketch.redis.nameOverride Overrides the Redis deployment name
     ## This is required since Turbinia and Timesketch also use Redis, we need to differentiate the instances.
     ##
-    nameOverride: yeti-redis
+    # nameOverride: yeti-redis
     ## Redis Authentication parameters
     ##
     auth:
@@ -855,6 +824,7 @@ yeti:
   ## @section Yeti Arangodb configuration
   ##
   arangodb:
+    # nameOverride: yeti-arangodb
     image:
       ## @param arangodb.image.repository Yeti arangodb image repository
       ##
@@ -866,13 +836,6 @@ yeti:
       ## @param arangodb.image.tag Overrides the image tag whose default is the chart appVersion
       ##
       tag: latest
-      ## @param arangodb.image.imagePullSecrets Specify secrets if pulling from a private repository
-      ## ref https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
-      ## e.g.
-      ## imagePullSecrets:
-      ##   - myRegistryKeySecretName
-      ##
-      imagePullSecrets: []
     ## Service Parameters
     ##
     service:
