@@ -19,6 +19,7 @@ spec:
         checksum/config: {{  include (print $.Template.BasePath "/init-configmap.yaml") . | sha256sum }}
         prometheus.io/port: "8080"
         prometheus.io/scrape: "true"
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
       labels:
         app.kubernetes.io/component: worker
         {{- include "timesketch.selectorLabels" . | nindent 8 }}
@@ -26,13 +27,14 @@ spec:
       hostNetwork: false
       hostIPC: false
       automountServiceAccountToken: false
+      terminationGracePeriodSeconds: {{ .Values.worker.terminationGracePeriodSeconds }}
       initContainers:
       {{- include "timesketch.initContainer" . | nindent 8 }}
       containers:
         - name: worker
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: ["sh", "-c", "celery -A timesketch.lib.tasks worker --loglevel={{ .Values.config.logLevel }}"]
+          command: ["sh", "-c", "exec celery -A timesketch.lib.tasks worker --loglevel={{ .Values.config.logLevel }}"]
           {{- if .Values.securityContext.enabled }}
           securityContext:
             capabilities:
